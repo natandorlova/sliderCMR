@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Заполнение CMR</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="page">
+
+    <div class="intro">
+
+        <h2>Заполнение CMR</h2>
+
+        <p>
+            Передвиньте ползунок сверху вниз
+        </p>
+
+    </div>
+
+
+    <div class="cmr-layout">
+
+
+        <!-- ДОКУМЕНТ -->
+
+        <div class="document-wrapper">
+
+            <div class="document" id="document">
+
+                <img
+                    src="images/cmr.png"
+                    class="document-image"
+                    id="cmrImage"
+                    draggable="false"
+                >
+
+                <div id="markers"></div>
+
+            </div>
+
+
+            <!-- СЛАЙДЕР -->
+
+            <div class="slider-container">
+
+                <div
+                    class="slider-track"
+                    id="sliderTrack"
+                >
+
+                    <div
+                        class="slider-handle"
+                        id="sliderHandle"
+                    >
+
+                        <div class="handle-circle">
+                            ▼
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ПОДСКАЗКА СПРАВА -->
+
+        <aside
+            class="info-panel"
+            id="infoPanel"
+        >
+
+            <div class="hint">
+
+                <div class="hint-icon">i</div>
+
+                <p>
+                    Для получения подсказки
+                    кликните на нужное поле.
+                </p>
+
+            </div>
+
+            <div
+                class="info-card"
+                id="infoCard"
+            >
+
+                <button
+                    class="close-button"
+                    id="closeButton"
+                    aria-label="Закрыть"
+                >
+                    ×
+                </button>
+
+                <h3 id="cardTitle"></h3>
+
+                <div id="cardContent"></div>
+
+            </div>
+
+        </aside>
+
+
+    </div>
+
+</div>
+
+
+<script src="data.js"></script>
+<script src="script.js"></script>
+
+</body>
+
+</html>
