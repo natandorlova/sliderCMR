@@ -1,17 +1,16 @@
 const sliderTrack = document.getElementById("sliderTrack");
 const sliderHandle = document.getElementById("sliderHandle");
-
 const markersContainer = document.getElementById("markers");
-
-const documentImage = document.querySelector(".invoice-image");
+const documentImage = document.getElementById("cmrImage");
+const instruction = document.getElementById("instruction");
 
 let progress = 0;
 let dragging = false;
 
 
-// =====================================================
-// СОЗДАНИЕ ПОЛЕЙ
-// =====================================================
+/* =========================
+   СОЗДАНИЕ МАРКЕРОВ
+   ========================= */
 
 function createMarkers() {
 
@@ -30,32 +29,22 @@ function createMarkers() {
         marker.style.height = item.h + "%";
 
         marker.style.borderColor = item.color;
-
-        /*
-         * Цветная полупрозрачная заливка
-         */
         marker.style.background = hexToRgba(item.color, 0.28);
 
-
-        // -------------------------------
-        // НОМЕР + НАЗВАНИЕ
-        // -------------------------------
 
         const title = document.createElement("div");
 
         title.className = "marker-title";
 
-        title.innerHTML =
-            `<strong>${item.number}</strong> ${item.title}`;
+        title.innerHTML = `
+            <strong>${item.number}</strong>
+            ${item.title}
+        `;
 
         title.style.color = item.color;
 
         marker.appendChild(title);
 
-
-        // -------------------------------
-        // КЛИК
-        // -------------------------------
 
         marker.addEventListener("click", function(e) {
 
@@ -73,9 +62,9 @@ function createMarkers() {
 }
 
 
-// =====================================================
-// ПРЕОБРАЗОВАНИЕ HEX В RGBA
-// =====================================================
+/* =========================
+   ЦВЕТ
+   ========================= */
 
 function hexToRgba(hex, alpha) {
 
@@ -90,18 +79,17 @@ function hexToRgba(hex, alpha) {
 }
 
 
-// =====================================================
-// ПОКАЗ ПОЛЕЙ
-// =====================================================
+/* =========================
+   ПОКАЗ МАРКЕРОВ
+   ========================= */
 
 function updateMarkers() {
 
     data.forEach(item => {
 
-        const marker =
-            document.querySelector(
-                `.marker[data-id="${item.id}"]`
-            );
+        const marker = document.querySelector(
+            `.marker[data-id="${item.id}"]`
+        );
 
         if (!marker) return;
 
@@ -121,152 +109,79 @@ function updateMarkers() {
 }
 
 
-// =====================================================
-// КАРТОЧКА С ОПИСАНИЕМ
-// =====================================================
+/* =========================
+   ИНФОРМАЦИОННАЯ КАРТОЧКА
+   ========================= */
 
 function showInfoCard(item) {
-    let panel = document.getElementById("infoPanel");
 
-    if (!panel) {
-        panel = document.createElement("div");
-        panel.id = "infoPanel";
-        panel.className = "info-panel";
+    const panel = document.getElementById("infoPanel");
+    const card = document.getElementById("infoCard");
+    const cardNumber = document.getElementById("cardNumber");
+    const cardTitle = document.getElementById("cardTitle");
+    const cardContent = document.getElementById("cardContent");
+    const closeButton = document.getElementById("closeButton");
 
-        const sidePanel = document.querySelector(".side-panel");
 
-        if (sidePanel) {
-            sidePanel.appendChild(panel);
-        } else {
-            document.body.appendChild(panel);
+    card.style.borderLeftColor = item.color;
+
+    cardNumber.textContent = item.number;
+    cardNumber.style.color = item.color;
+
+    cardTitle.textContent = item.title;
+    cardTitle.style.color = item.color;
+
+
+    cardContent.innerHTML = `
+
+        <p>
+            <strong>Вносим:</strong><br>
+            ${item.content.enter}
+        </p>
+
+        <p>
+            <strong>Где берем:</strong><br>
+            ${item.content.source}
+        </p>
+
+        ${
+            item.important
+            ? `
+                <p class="important">
+                    <strong>Важно:</strong><br>
+                    ${item.important}
+                </p>
+            `
+            : ""
         }
-    }
-
-    panel.innerHTML = `
-        <button class="close-button" type="button" aria-label="Закрыть">×</button>
-
-        <div class="info-card" style="border-left-color:${item.color}">
-
-            <div class="info-number" style="color:${item.color}">
-                ${item.number}
-            </div>
-
-            <h3 style="color:${item.color}">
-                ${item.title}
-            </h3>
-
-            <p>
-                <strong>Вносим:</strong><br>
-                ${item.content.enter}
-            </p>
-
-            <p>
-                <strong>Где берем:</strong><br>
-                ${item.content.source}
-            </p>
-
-            ${
-                item.important
-                ? `
-                <p class="important">
-                    <strong>Важно:</strong><br>
-                    ${item.important}
-                </p>
-                `
-                : ""
-            }
-
-        </div>
-    `;
-
-    const closeButton = panel.querySelector(".close-button");
-
-    closeButton.addEventListener("click", function() {
-        panel.classList.remove("visible");
-    });
-
-    panel.classList.add("visible");
-}
-
-
-    // -------------------------------
-    // СОДЕРЖИМОЕ КАРТОЧКИ
-    // -------------------------------
-
-    panel.innerHTML = `
-
-        <button class="close-button"
-                type="button"
-                aria-label="Закрыть">
-            ×
-        </button>
-
-        <div class="info-card"
-             style="border-left-color:${item.color}">
-
-            <div class="info-number"
-                 style="color:${item.color}">
-                ${item.number}
-            </div>
-
-            <h3 style="color:${item.color}">
-                ${item.title}
-            </h3>
-
-            <p>
-                <strong>Вносим:</strong><br>
-                ${item.content.enter}
-            </p>
-
-            <p>
-                <strong>Где берем:</strong><br>
-                ${item.content.source}
-            </p>
-
-            ${
-                item.important
-                ?
-                `
-                <p class="important">
-                    <strong>Важно:</strong><br>
-                    ${item.important}
-                </p>
-                `
-                :
-                ""
-            }
-
-        </div>
 
     `;
 
 
-    // -------------------------------
-    // КРЕСТИК
-    // -------------------------------
+    /*
+       Скрываем инструкцию
+       и показываем карточку
+    */
 
-    const closeButton =
-        panel.querySelector(".close-button");
+    instruction.style.display = "none";
 
-    closeButton.addEventListener("click", function() {
+    panel.classList.add("visible");
+
+
+    closeButton.onclick = function() {
 
         panel.classList.remove("visible");
 
-    });
+        instruction.style.display = "block";
 
-
-    // -------------------------------
-    // ПОКАЗ
-    // -------------------------------
-
-    panel.classList.add("visible");
+    };
 
 }
 
 
-// =====================================================
-// ДВИЖЕНИЕ ПОЛЗУНКА
-// =====================================================
+/* =========================
+   ПОЛЗУНОК
+   ========================= */
 
 function setProgress(value) {
 
@@ -275,33 +190,23 @@ function setProgress(value) {
         Math.min(100, value)
     );
 
-
-    sliderHandle.style.top =
-        progress + "%";
-
+    sliderHandle.style.top = progress + "%";
 
     updateMarkers();
 
 }
 
 
-// =====================================================
-// ПОЛУЧАЕМ ПРОЦЕНТ ПО ПОЛОЖЕНИЮ КУРСОРА
-// =====================================================
+/* =========================
+   ПОЛОЖЕНИЕ ПО КООРДИНАТЕ Y
+   ========================= */
 
 function getProgress(clientY) {
 
-    const rect =
-        sliderTrack.getBoundingClientRect();
+    const rect = sliderTrack.getBoundingClientRect();
 
-
-    let value =
-        (
-            (clientY - rect.top)
-            /
-            rect.height
-        ) * 100;
-
+    const value =
+        ((clientY - rect.top) / rect.height) * 100;
 
     return Math.max(
         0,
@@ -311,26 +216,38 @@ function getProgress(clientY) {
 }
 
 
-// =====================================================
-// ВЫСОТА ТРЕКА = ВЫСОТА ДОКУМЕНТА
-// =====================================================
+/* =========================
+   ВЫСОТА ТРЕКА
+   ========================= */
 
 function resizeTrack() {
 
-    if (!documentImage) return;
+    if (!documentImage || !sliderTrack) return;
 
-    const height =
+
+    /*
+       Получаем реальную высоту
+       отрендерированного изображения
+    */
+
+    const imageHeight =
         documentImage.getBoundingClientRect().height;
 
+
+    /*
+       Принудительно задаём эту высоту
+       треку
+    */
+
     sliderTrack.style.height =
-        height + "px";
+        imageHeight + "px";
 
 }
 
 
-// =====================================================
-// НАЧАЛО ПЕРЕТАСКИВАНИЯ
-// =====================================================
+/* =========================
+   DRAG: POINTER
+   ========================= */
 
 sliderHandle.addEventListener(
     "pointerdown",
@@ -348,10 +265,6 @@ sliderHandle.addEventListener(
 );
 
 
-// =====================================================
-// ДВИЖЕНИЕ
-// =====================================================
-
 sliderHandle.addEventListener(
     "pointermove",
     function(e) {
@@ -365,10 +278,6 @@ sliderHandle.addEventListener(
     }
 );
 
-
-// =====================================================
-// ОКОНЧАНИЕ
-// =====================================================
 
 sliderHandle.addEventListener(
     "pointerup",
@@ -398,22 +307,20 @@ sliderHandle.addEventListener(
 );
 
 
-// =====================================================
-// КЛИК ПО САМОМУ ТРЕКУ
-// Можно сразу переместить ползунок
-// =====================================================
+/* =========================
+   КЛИК ПО ТРЕКУ
+   ========================= */
 
 sliderTrack.addEventListener(
     "pointerdown",
     function(e) {
 
-        if (e.target === sliderHandle ||
-            sliderHandle.contains(e.target)) {
-
+        if (
+            e.target === sliderHandle ||
+            sliderHandle.contains(e.target)
+        ) {
             return;
-
         }
-
 
         setProgress(
             getProgress(e.clientY)
@@ -423,9 +330,9 @@ sliderTrack.addEventListener(
 );
 
 
-// =====================================================
-// ЗАПУСК
-// =====================================================
+/* =========================
+   ЗАПУСК
+   ========================= */
 
 window.addEventListener(
     "load",
@@ -433,17 +340,27 @@ window.addEventListener(
 
         createMarkers();
 
-        resizeTrack();
+        /*
+           Ждём, пока браузер
+           окончательно рассчитает
+           размер изображения.
+        */
 
-        setProgress(0);
+        requestAnimationFrame(function() {
+
+            resizeTrack();
+
+            setProgress(0);
+
+        });
 
     }
 );
 
 
-// =====================================================
-// RESIZE
-// =====================================================
+/* =========================
+   RESIZE
+   ========================= */
 
 window.addEventListener(
     "resize",
