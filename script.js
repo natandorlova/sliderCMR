@@ -126,22 +126,67 @@ function updateMarkers() {
 // =====================================================
 
 function showInfoCard(item) {
+    let panel = document.getElementById("infoPanel");
 
-    let panel =
-        document.getElementById("infoPanel");
-
-
-    // если панели ещё нет, создаём её
     if (!panel) {
-
         panel = document.createElement("div");
-
         panel.id = "infoPanel";
         panel.className = "info-panel";
 
-        document.body.appendChild(panel);
+        const sidePanel = document.querySelector(".side-panel");
 
+        if (sidePanel) {
+            sidePanel.appendChild(panel);
+        } else {
+            document.body.appendChild(panel);
+        }
     }
+
+    panel.innerHTML = `
+        <button class="close-button" type="button" aria-label="Закрыть">×</button>
+
+        <div class="info-card" style="border-left-color:${item.color}">
+
+            <div class="info-number" style="color:${item.color}">
+                ${item.number}
+            </div>
+
+            <h3 style="color:${item.color}">
+                ${item.title}
+            </h3>
+
+            <p>
+                <strong>Вносим:</strong><br>
+                ${item.content.enter}
+            </p>
+
+            <p>
+                <strong>Где берем:</strong><br>
+                ${item.content.source}
+            </p>
+
+            ${
+                item.important
+                ? `
+                <p class="important">
+                    <strong>Важно:</strong><br>
+                    ${item.important}
+                </p>
+                `
+                : ""
+            }
+
+        </div>
+    `;
+
+    const closeButton = panel.querySelector(".close-button");
+
+    closeButton.addEventListener("click", function() {
+        panel.classList.remove("visible");
+    });
+
+    panel.classList.add("visible");
+}
 
 
     // -------------------------------
