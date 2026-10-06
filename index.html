@@ -25,19 +25,23 @@
     </div>
 
 
-    <div class="cmr-layout">
+    <div class="main-layout">
 
 
-        <!-- ДОКУМЕНТ -->
+        <!-- ДОКУМЕНТ + ПОЛЗУНОК -->
 
         <div class="document-wrapper">
+
+
+            <!-- ДОКУМЕНТ -->
 
             <div class="document" id="document">
 
                 <img
                     src="images/cmr.png"
-                    class="document-image"
+                    class="invoice-image"
                     id="cmrImage"
+                    alt="CMR"
                     draggable="false"
                 >
 
@@ -46,69 +50,84 @@
             </div>
 
 
-            <!-- СЛАЙДЕР -->
+            <!-- ВЕРТИКАЛЬНЫЙ ПОЛЗУНОК -->
 
-            <div class="slider-container">
+            <div
+                class="slider-track"
+                id="sliderTrack"
+            >
 
                 <div
-                    class="slider-track"
-                    id="sliderTrack"
+                    class="slider-handle"
+                    id="sliderHandle"
                 >
 
-                    <div
-                        class="slider-handle"
-                        id="sliderHandle"
-                    >
-
-                        <div class="handle-circle">
-                            ▼
-                        </div>
-
+                    <div class="handle-circle">
+                        ▼
                     </div>
 
                 </div>
 
             </div>
 
+
         </div>
 
 
-        <!-- ПОДСКАЗКА СПРАВА -->
+        <!-- ПРАВАЯ ПАНЕЛЬ -->
 
-        <aside
-            class="info-panel"
-            id="infoPanel"
-        >
+        <aside class="side-panel">
 
-            <div class="hint">
 
-                <div class="hint-icon">i</div>
-
-                <p>
-                    Для получения подсказки
-                    кликните на нужное поле.
-                </p>
-
-            </div>
+            <!-- ИНСТРУКЦИЯ, ВИДНА ПО УМОЛЧАНИЮ -->
 
             <div
-                class="info-card"
-                id="infoCard"
+                class="instruction"
+                id="instruction"
             >
 
-                <button
-                    class="close-button"
-                    id="closeButton"
-                    aria-label="Закрыть"
-                >
-                    ×
-                </button>
+                <strong>Подсказка</strong>
 
-                <h3 id="cardTitle"></h3>
-
-                <div id="cardContent"></div>
+                Кликните на цветное поле,
+                чтобы увидеть пояснение.
 
             </div>
+
+
+            <!-- ЗДЕСЬ ПОЯВЛЯЕТСЯ КАРТОЧКА -->
+
+            <div
+                class="info-panel"
+                id="infoPanel"
+            >
+
+                <div
+                    class="info-card"
+                    id="infoCard"
+                >
+
+                    <button
+                        class="close-button"
+                        id="closeButton"
+                        type="button"
+                        aria-label="Закрыть"
+                    >
+                        ×
+                    </button>
+
+                    <div
+                        class="info-number"
+                        id="cardNumber"
+                    ></div>
+
+                    <h3 id="cardTitle"></h3>
+
+                    <div id="cardContent"></div>
+
+                </div>
+
+            </div>
+
 
         </aside>
 
