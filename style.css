@@ -17,7 +17,7 @@ body {
 
 
 /* =========================
-   ОСНОВНАЯ СТРАНИЦА
+   СТРАНИЦА
    ========================= */
 
 .page {
@@ -26,14 +26,8 @@ body {
     padding: 24px 28px;
 }
 
-.page h1,
-.page h2,
-.page h3 {
-    margin-top: 0;
-}
-
 .page h2 {
-    margin-bottom: 6px;
+    margin: 0 0 6px;
     font-size: 26px;
     font-weight: 700;
 }
@@ -59,24 +53,23 @@ body {
 
 
 /* =========================
-   ДОКУМЕНТ + ПОЛЗУНОК
+   ДОКУМЕНТ + ТРЭК
    ========================= */
 
 .document-wrapper {
     display: flex;
     align-items: flex-start;
-    justify-content: center;
     gap: 14px;
 
     flex: 0 0 auto;
 }
 
 
-/* Контейнер изображения.
-   Он должен иметь размеры самого изображения. */
+/* Сам документ */
 
 .document {
     position: relative;
+
     width: fit-content;
     height: fit-content;
 
@@ -84,7 +77,7 @@ body {
 }
 
 
-/* Сам CMR */
+/* Изображение */
 
 .invoice-image {
     display: block;
@@ -102,7 +95,7 @@ body {
 
 
 /* =========================
-   СЛОЙ МАРКЕРОВ
+   МАРКЕРЫ
    ========================= */
 
 #markers {
@@ -114,11 +107,6 @@ body {
 
     z-index: 5;
 }
-
-
-/* =========================
-   ПОДСВЕТКА ПОЛЯ
-   ========================= */
 
 .marker {
     position: absolute;
@@ -132,32 +120,23 @@ body {
 
     transition:
         opacity 0.25s ease,
-        background-color 0.25s ease,
-        box-shadow 0.25s ease;
+        box-shadow 0.2s ease;
 
     z-index: 5;
 }
-
-
-/* Поле появляется после прохождения ползунка */
 
 .marker.active {
     opacity: 1;
 }
 
-
-/* При наведении немного усиливаем подсветку */
-
 .marker:hover {
     box-shadow:
-        0 0 0 2px rgba(255, 255, 255, 0.75),
+        0 0 0 2px rgba(255, 255, 255, 0.8),
         0 3px 12px rgba(0, 0, 0, 0.12);
 }
 
 
-/* =========================
-   НОМЕР + НАЗВАНИЕ ПОЛЯ
-   ========================= */
+/* Номер и название поля */
 
 .marker-title {
     position: absolute;
@@ -189,9 +168,6 @@ body {
     pointer-events: none;
 }
 
-
-/* Номер */
-
 .marker-title strong {
     font-size: 14px;
     font-weight: 800;
@@ -199,7 +175,7 @@ body {
 
 
 /* =========================
-   ПОЛЗУНОК
+   ТРЭК
    ========================= */
 
 .slider-track {
@@ -208,10 +184,10 @@ body {
     width: 10px;
 
     /*
-      Высота задаётся JavaScript:
-      sliderTrack.style.height = ...
+       JS задаёт здесь фактическую высоту
+       изображения в пикселях.
     */
-    height: 500px;
+    height: 100%;
 
     flex: 0 0 10px;
 
@@ -225,7 +201,9 @@ body {
 }
 
 
-/* Вертикальная линия */
+/*
+   Вертикальная линия на всю высоту трэка
+*/
 
 .slider-track::before {
     content: "";
@@ -254,7 +232,6 @@ body {
     position: absolute;
 
     left: 50%;
-
     top: 0;
 
     width: 48px;
@@ -276,9 +253,6 @@ body {
 .slider-handle:active {
     cursor: grabbing;
 }
-
-
-/* Круг */
 
 .handle-circle {
     width: 42px;
@@ -307,35 +281,48 @@ body {
 
 
 /* =========================
-   ПРАВАЯ ПАНЕЛЬ
+   ПРАВАЯ ОБЛАСТЬ
    ========================= */
 
 .side-panel {
     width: 330px;
-
     flex: 0 0 330px;
 
-    position: sticky;
-    top: 24px;
+    /*
+       Важно:
+       панель является отдельной колонкой
+       рядом с документом, а не частью документа.
+    */
+
+    position: relative;
+
+    min-height: 200px;
 }
 
 
-/* Постоянная инструкция */
+/* =========================
+   ИНСТРУКЦИЯ ПО УМОЛЧАНИЮ
+   ========================= */
 
 .instruction {
-    padding: 18px 20px;
+    display: block;
+
+    width: 100%;
+
+    padding: 20px 22px;
 
     background: #ffffff;
 
-    border-radius: 12px;
-
     border: 1px solid #e1e6e9;
+    border-radius: 12px;
 
     box-shadow:
         0 4px 16px rgba(0, 0, 0, 0.06);
 
     font-size: 16px;
     line-height: 1.5;
+
+    color: #374151;
 }
 
 .instruction strong {
@@ -348,13 +335,13 @@ body {
 
 
 /* =========================
-   ИНФОРМАЦИОННАЯ КАРТОЧКА
+   ИНФОРМАЦИОННАЯ ПАНЕЛЬ
    ========================= */
 
 .info-panel {
-    margin-top: 16px;
-
     display: none;
+
+    width: 100%;
 }
 
 .info-panel.visible {
@@ -362,10 +349,12 @@ body {
 }
 
 
-/* Сама карточка */
+/* Карточка */
 
 .info-card {
     position: relative;
+
+    width: 100%;
 
     padding: 20px 20px 18px 22px;
 
@@ -380,7 +369,7 @@ body {
 }
 
 
-/* Номер в карточке */
+/* Номер */
 
 .info-number {
     margin-bottom: 3px;
@@ -393,14 +382,14 @@ body {
 /* Заголовок */
 
 .info-card h3 {
-    margin: 0 34px 18px 0;
+    margin: 0 38px 18px 0;
 
     font-size: 19px;
     line-height: 1.25;
 }
 
 
-/* Абзацы */
+/* Текст */
 
 .info-card p {
     margin: 0 0 15px;
@@ -437,7 +426,7 @@ body {
 
 
 /* =========================
-   КНОПКА ЗАКРЫТИЯ
+   КРЕСТИК
    ========================= */
 
 .close-button {
@@ -467,9 +456,7 @@ body {
 
     cursor: pointer;
 
-    transition:
-        background 0.2s ease,
-        color 0.2s ease;
+    z-index: 10;
 }
 
 .close-button:hover {
@@ -479,7 +466,7 @@ body {
 
 
 /* =========================
-   АДАПТАЦИЯ ДЛЯ НОУТБУКА
+   НОУТБУК
    ========================= */
 
 @media (max-width: 1200px) {
@@ -504,7 +491,7 @@ body {
 
 
 /* =========================
-   АДАПТАЦИЯ ДЛЯ ПЛАНШЕТА
+   ПЛАНШЕТ
    ========================= */
 
 @media (max-width: 900px) {
@@ -533,10 +520,6 @@ body {
 
         width: min(650px, 100%);
         flex-basis: auto;
-    }
-
-    .slider-track {
-        flex-basis: 10px;
     }
 }
 
@@ -583,10 +566,6 @@ body {
         height: 36px;
 
         font-size: 15px;
-    }
-
-    .marker {
-        border-width: 2px;
     }
 
     .marker-title {
