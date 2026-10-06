@@ -27,12 +27,14 @@ body {
 }
 
 .page h2 {
+    text-align:center;
     margin: 0 0 6px;
     font-size: 26px;
     font-weight: 700;
 }
 
 .subtitle {
+    text-align:center;
     margin: 0 0 20px;
     color: #6b7280;
     font-size: 16px;
