@@ -115,66 +115,152 @@ function updateMarkers() {
 
 function showInfoCard(item) {
 
-    const panel = document.getElementById("infoPanel");
-    const card = document.getElementById("infoCard");
-    const cardNumber = document.getElementById("cardNumber");
-    const cardTitle = document.getElementById("cardTitle");
-    const cardContent = document.getElementById("cardContent");
-    const closeButton = document.getElementById("closeButton");
+    let panel = document.getElementById("infoPanel");
+
+    if (!panel) {
+        panel = document.createElement("div");
+        panel.id = "infoPanel";
+        panel.className = "info-panel";
+
+        document.body.appendChild(panel);
+    }
+
+    /*
+       Определяем, какой документ сейчас открыт.
+       Здесь предполагается, что у тебя есть
+       переменная documentType = "invoice" / "packing".
+    */
+
+    const documentData = item[documentType];
+
+    if (!documentData) return;
 
 
-    card.style.borderLeftColor = item.color;
+    /*
+       Находим само выделенное поле
+    */
 
-    cardNumber.textContent = item.number;
-    cardNumber.style.color = item.color;
+    const marker = document.querySelector(
+        `.marker[data-id="${item.id}"][data-document="${documentType}"]`
+    );
 
-    cardTitle.textContent = item.title;
-    cardTitle.style.color = item.color;
+    if (!marker) return;
 
 
-    cardContent.innerHTML = `
+    /*
+       Положение выделенного поля относительно окна браузера
+    */
 
-        <p>
-            <strong>Вносим:</strong><br>
-            ${item.content.enter}
-        </p>
+    const rect = marker.getBoundingClientRect();
 
-        <p>
-            <strong>Где берем:</strong><br>
-            ${item.content.source}
-        </p>
 
-        ${
-            item.important
-            ? `
+    /*
+       Положение карточки:
+       справа от документа,
+       но на уровне выделенного поля
+    */
+
+    const gap = 24;
+
+    let left = rect.right + gap;
+
+    let top = rect.top;
+
+
+    /*
+       Если карточка не помещается по высоте,
+       немного поднимаем её.
+    */
+
+    const cardHeight = 320;
+
+    if (top + cardHeight > window.innerHeight - 20) {
+
+        top = window.innerHeight - cardHeight - 20;
+
+    }
+
+    if (top < 20) {
+
+        top = 20;
+
+    }
+
+
+    panel.innerHTML = `
+        <button
+            class="close-button"
+            type="button"
+            aria-label="Закрыть"
+        >
+            ×
+        </button>
+
+        <div
+            class="info-card"
+            style="border-left-color:${item.color}"
+        >
+
+            <div
+                class="info-number"
+                style="color:${item.color}"
+            >
+                ${item.number}
+            </div>
+
+            <h3 style="color:${item.color}">
+                ${item.title}
+            </h3>
+
+            <p>
+                <strong>Вносим:</strong><br>
+                ${item.content.enter}
+            </p>
+
+            <p>
+                <strong>Где берем:</strong><br>
+                ${item.content.source}
+            </p>
+
+            ${
+                item.important
+                ? `
                 <p class="important">
                     <strong>Важно:</strong><br>
                     ${item.important}
                 </p>
-            `
-            : ""
-        }
+                `
+                : ""
+            }
 
+        </div>
     `;
 
 
     /*
-       Скрываем инструкцию
-       и показываем карточку
+       Ставим карточку на нужный уровень страницы
     */
 
-    instruction.style.display = "none";
+    panel.style.position = "fixed";
+    panel.style.left = left + "px";
+    panel.style.top = top + "px";
+
+
+    const closeButton =
+        panel.querySelector(".close-button");
+
+
+    closeButton.addEventListener(
+        "click",
+        function() {
+
+            panel.classList.remove("visible");
+
+        }
+    );
+
 
     panel.classList.add("visible");
-
-
-    closeButton.onclick = function() {
-
-        panel.classList.remove("visible");
-
-        instruction.style.display = "block";
-
-    };
 
 }
 
