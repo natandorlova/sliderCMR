@@ -164,7 +164,7 @@ const data = [
 
         x: 16,
         y: 38,
-        w: 14,
+        w: 15,
         h: 12,
 
         showAt: 40,
@@ -189,7 +189,7 @@ const data = [
 
         x: 31,
         y: 38,
-        w: 15,
+        w: 16,
         h: 12,
 
         showAt: 40,
@@ -214,7 +214,7 @@ const data = [
 
         x: 47,
         y: 38,
-        w: 14,
+        w: 15,
         h: 12,
 
         showAt: 40,
