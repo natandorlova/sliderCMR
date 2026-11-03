@@ -20,27 +20,30 @@ body {
 /* =========================
    СТРАНИЦА
    ========================= */
-
 .page {
     width: 100%;
     min-height: 100vh;
     padding: 24px 28px;
 }
 
-.page h2 {
+/* Заголовок и подзаголовок */
+.intro {
+    width: min(850px, calc(100vw - 420px));
+    margin: 0 auto 8px;
     text-align: center;
+}
+
+.intro h2 {
     color: #309d7f;
     font-size: 32px;
-    margin-bottom: 10px;
+    margin: 0 0 2px;
 }
 
-.subtitle {
-    text-align: center;
+.intro .subtitle {
     color: #666;
     font-size: 18px;
-    margin-bottom: 8px;
+    margin: 0;
 }
-
 /* =========================
    ОСНОВНОЙ LAYOUT
    ========================= */
