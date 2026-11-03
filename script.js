@@ -1,41 +1,31 @@
-
 const sliderTrack = document.getElementById("sliderTrack");
 const sliderHandle = document.getElementById("sliderHandle");
 const markersContainer = document.getElementById("markers");
 const documentImage = document.getElementById("cmrImage");
 
+const sidePanel = document.querySelector(".side-panel");
+const instruction = document.getElementById("instruction");
+const mainLayout = document.querySelector(".main-layout");
+
 let progress = 0;
 let dragging = false;
 let dragOffsetY = 0;
 
-// Создание подсветок
-function createMarkers() {
-    markersContainer.innerHTML = "";
 
+// СОЗДАНИЕ МАРКЕРОВ
+
+function createMarkers() {
     data.forEach(item => {
         const marker = document.createElement("div");
 
         marker.className = "marker";
         marker.dataset.id = item.id;
 
-        marker.style.left = item.x + "%";
         marker.style.top = item.y + "%";
-        marker.style.width = item.w + "%";
-        marker.style.height = item.h + "%";
+        marker.style.left = item.x + "%";
+        marker.style.backgroundColor = item.color;
 
-        marker.style.borderColor = item.color;
-        marker.style.background = hexToRgba(item.color, 0.28);
-
-        const title = document.createElement("div");
-
-        title.className = "marker-title";
-        title.innerHTML = `<strong>${item.number}</strong> ${item.title}`;
-        title.style.color = item.color;
-
-        marker.appendChild(title);
-
-        marker.addEventListener("click", function(e) {
-            e.stopPropagation();
+        marker.addEventListener("click", () => {
             showInfoCard(item);
         });
 
@@ -43,18 +33,9 @@ function createMarkers() {
     });
 }
 
-// Преобразование HEX в RGBA
-function hexToRgba(hex, alpha) {
-    hex = hex.replace("#", "");
 
-    const r = parseInt(hex.substring(0, 2), 16);
-    const g = parseInt(hex.substring(2, 4), 16);
-    const b = parseInt(hex.substring(4, 6), 16);
+// ОБНОВЛЕНИЕ МАРКЕРОВ
 
-    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-}
-
-// Появление подсветок
 function updateMarkers() {
     data.forEach(item => {
         const marker = markersContainer.querySelector(
@@ -71,10 +52,11 @@ function updateMarkers() {
     });
 }
 
-// Информационная карточка
+
+// ОТОБРАЖЕНИЕ КАРТОЧКИ
+
 function showInfoCard(item) {
     const panel = document.getElementById("infoPanel");
-
     const card = document.getElementById("infoCard");
     const cardNumber = document.getElementById("cardNumber");
     const cardTitle = document.getElementById("cardTitle");
@@ -91,22 +73,13 @@ function showInfoCard(item) {
     cardTitle.style.color = item.color;
 
     cardContent.innerHTML = `
-        <p>
-            <strong>Вносим:</strong><br>
-            ${item.content.enter}
-        </p>
-
-        <p>
-            <strong>Где берем:</strong><br>
-            ${item.content.source}
-        </p>
-
-        ${item.important ? `
-            <p class="important">
-                <strong>Важно:</strong><br>
-                ${item.important}
-            </p>
-        ` : ""}
+        <p><strong>Вносим:</strong><br>${item.content.enter}</p>
+        <p><strong>Где берем:</strong><br>${item.content.source}</p>
+        ${
+            item.important
+                ? `<p class="important"><strong>Важно:</strong><br>${item.important}</p>`
+                : ""
+        }
     `;
 
     panel.classList.add("visible");
@@ -114,9 +87,47 @@ function showInfoCard(item) {
     document.getElementById("closeButton").onclick = function() {
         panel.classList.remove("visible");
     };
+
+    updateSidePanelPosition();
 }
 
-// Максимальное перемещение ползунка
+
+// ПОЗИЦИЯ БОКОВОЙ ПАНЕЛИ
+
+function updateSidePanelPosition() {
+    if (!documentImage || !sidePanel || !instruction || !mainLayout) return;
+
+    const imageRect = documentImage.getBoundingClientRect();
+    const layoutRect = mainLayout.getBoundingClientRect();
+
+    let anchor;
+
+    if (progress < 35) {
+        anchor = 0.24;
+    } else if (progress < 68) {
+        anchor = 0.56;
+    } else {
+        anchor = 0.83;
+    }
+
+    const targetCardTop =
+        imageRect.top - layoutRect.top +
+        imageRect.height * anchor;
+
+    const instructionHeight = instruction.offsetHeight;
+    const gap = 16;
+
+    const targetPanelTop =
+        targetCardTop - instructionHeight - gap;
+
+    const offset = targetPanelTop - sidePanel.offsetTop;
+
+    sidePanel.style.transform = `translateY(${offset}px)`;
+}
+
+
+// РАСЧЁТ ПОЛОЖЕНИЯ ПОЛЗУНКА
+
 function getMaxTop() {
     return Math.max(
         0,
@@ -124,7 +135,7 @@ function getMaxTop() {
     );
 }
 
-// Установка положения ползунка
+
 function setHandleTop(top) {
     const maxTop = getMaxTop();
 
@@ -137,9 +148,10 @@ function setHandleTop(top) {
         : 0;
 
     updateMarkers();
+    updateSidePanelPosition();
 }
 
-// Установка прогресса в процентах
+
 function setProgress(value) {
     progress = Math.max(0, Math.min(100, value));
 
@@ -148,14 +160,9 @@ function setProgress(value) {
     setHandleTop(maxTop * progress / 100);
 }
 
-// Получение положения ползунка при перетаскивании
-function getHandleTop(clientY) {
-    const rect = sliderTrack.getBoundingClientRect();
 
-    return clientY - rect.top - dragOffsetY;
-}
+// ИЗМЕНЕНИЕ ВЫСОТЫ ТРЕКА
 
-// Изменение длины дорожки
 function resizeTrack() {
     if (!documentImage || !sliderTrack) return;
 
@@ -163,73 +170,83 @@ function resizeTrack() {
 
     if (imageHeight > 0) {
         sliderTrack.style.height = (imageHeight + 30) + "px";
-
         setProgress(progress);
     }
 }
 
-// Перетаскивание ползунка
-sliderHandle.addEventListener("pointerdown", function(e) {
+
+// ПЕРЕМЕЩЕНИЕ ПОЛЗУНКА
+
+function getPointerY(event) {
+    return event.clientY;
+}
+
+
+sliderHandle.addEventListener("pointerdown", function(event) {
     dragging = true;
 
     const handleRect = sliderHandle.getBoundingClientRect();
 
-    dragOffsetY = e.clientY - handleRect.top;
+    dragOffsetY = getPointerY(event) - handleRect.top;
 
-    sliderHandle.setPointerCapture(e.pointerId);
-
-    e.preventDefault();
+    sliderHandle.setPointerCapture(event.pointerId);
 });
 
-sliderHandle.addEventListener("pointermove", function(e) {
+
+sliderHandle.addEventListener("pointermove", function(event) {
     if (!dragging) return;
 
-    setHandleTop(getHandleTop(e.clientY));
+    const trackRect = sliderTrack.getBoundingClientRect();
+
+    const top =
+        getPointerY(event) -
+        trackRect.top -
+        dragOffsetY;
+
+    setHandleTop(top);
 });
 
-sliderHandle.addEventListener("pointerup", function(e) {
+
+sliderHandle.addEventListener("pointerup", function() {
     dragging = false;
-
-    try {
-        sliderHandle.releasePointerCapture(e.pointerId);
-    } catch(error) {}
 });
+
 
 sliderHandle.addEventListener("pointercancel", function() {
     dragging = false;
 });
 
-// Клик по дорожке
-sliderTrack.addEventListener("pointerdown", function(e) {
-    if (
-        e.target === sliderHandle ||
-        sliderHandle.contains(e.target)
-    ) {
-        return;
-    }
 
-    const rect = sliderTrack.getBoundingClientRect();
+// КЛИК ПО ТРЕКУ
 
-    const handleHeight = sliderHandle.offsetHeight;
+sliderTrack.addEventListener("pointerdown", function(event) {
+    if (event.target === sliderHandle) return;
 
-    const top = e.clientY - rect.top - handleHeight / 2;
+    const trackRect = sliderTrack.getBoundingClientRect();
+
+    const top =
+        getPointerY(event) -
+        trackRect.top -
+        sliderHandle.offsetHeight / 2;
 
     setHandleTop(top);
 });
 
-// Инициализация
+
+// ИНИЦИАЛИЗАЦИЯ
+
 function initializeSlider() {
     createMarkers();
     resizeTrack();
     setProgress(0);
 }
 
-if (documentImage.complete && documentImage.naturalHeight > 0) {
+
+if (documentImage.complete) {
     initializeSlider();
 } else {
-    documentImage.addEventListener("load", initializeSlider, {
-        once: true
-    });
+    documentImage.addEventListener("load", initializeSlider);
 }
+
 
 window.addEventListener("resize", resizeTrack);
