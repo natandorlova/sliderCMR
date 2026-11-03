@@ -1,3 +1,4 @@
+
 * {
     box-sizing: border-box;
 }
@@ -31,6 +32,7 @@ body {
    ========================= */
 
 .main-layout {
+    position: relative;
     display: flex;
     align-items: flex-start;
     justify-content: center;
@@ -224,6 +226,7 @@ body {
     flex-direction: column;
     align-items: stretch;
     gap: 16px;
+    transition: transform 0.35s ease;
 }
 
 /* =========================
@@ -408,6 +411,7 @@ body {
         position: relative;
         width: min(650px, 100%);
         flex-basis: auto;
+        transform: none !important;
     }
 }
 
