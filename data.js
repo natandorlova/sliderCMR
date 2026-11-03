@@ -319,7 +319,7 @@ const data = [
         color: "#57d163",
 
         x: 2,
-        y: 63,
+        y: 62,
         w: 48,
         h: 5,
 
@@ -377,7 +377,7 @@ const data = [
         x: 50,
         y: 20,
         w: 48,
-        h: 6,
+        h: 9,
 
         showAt: 20,
 
