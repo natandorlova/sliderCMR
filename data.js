@@ -404,7 +404,7 @@ const data = [
 
         x: 2,
         y: 68,
-        w: 25,
+        w: 63,
         h: 2,
 
         showAt: 70,
@@ -429,7 +429,7 @@ const data = [
 
         x: 2,
         y: 70,
-        w: 30,
+        w: 31,
         h: 9,
 
         showAt: 75,
@@ -452,9 +452,9 @@ const data = [
 
         color: "#dc2626",
 
-        x: 33,
+        x: 34,
         y: 70,
-        w: 30,
+        w: 31,
         h: 9,
 
         showAt: 75,
@@ -477,10 +477,10 @@ const data = [
 
         color: "#57d163",
 
-        x: 64,
+        x: 66,
         y: 68,
         w: 30,
-        h: 10,
+        h: 11,
 
         showAt: 75,
 
