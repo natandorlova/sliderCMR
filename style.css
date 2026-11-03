@@ -618,4 +618,22 @@ body {
     .info-card p {
         font-size: 14px;
     }
+    .side-panel {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+}
+
+.instruction {
+    position: relative;
+    z-index: 30;
+    flex-shrink: 0;
+}
+
+.info-panel {
+    position: fixed;
+    z-index: 20;
+}
 }
