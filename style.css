@@ -27,18 +27,28 @@ body {
 }
 
 .page h2 {
+
     text-align:center;
+
     color:#309d7f;
-    margin: 0 0 6px;
-    font-size: 32px;
-    font-weight: 700;
+
+    font-size:32px;
+
+    margin-bottom:10px;
+
 }
 
-.subtitle {
+
+.subtitle{
+
     text-align:center;
-    margin: 0 0 20px;
+
     color:#666;
+
     font-size:18px;
+
+    margin-bottom:8px;
+
 }
 
 
