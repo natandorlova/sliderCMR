@@ -1,3 +1,4 @@
+
 const sliderTrack = document.getElementById("sliderTrack");
 const sliderHandle = document.getElementById("sliderHandle");
 const markersContainer = document.getElementById("markers");
@@ -5,7 +6,9 @@ const documentImage = document.getElementById("cmrImage");
 
 let progress = 0;
 let dragging = false;
+let dragOffsetY = 0;
 
+// Создание подсветок
 function createMarkers() {
     markersContainer.innerHTML = "";
 
@@ -40,6 +43,7 @@ function createMarkers() {
     });
 }
 
+// Преобразование HEX в RGBA
 function hexToRgba(hex, alpha) {
     hex = hex.replace("#", "");
 
@@ -50,6 +54,7 @@ function hexToRgba(hex, alpha) {
     return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 }
 
+// Появление подсветок
 function updateMarkers() {
     data.forEach(item => {
         const marker = markersContainer.querySelector(
@@ -66,6 +71,7 @@ function updateMarkers() {
     });
 }
 
+// Информационная карточка
 function showInfoCard(item) {
     const panel = document.getElementById("infoPanel");
 
@@ -103,7 +109,6 @@ function showInfoCard(item) {
         ` : ""}
     `;
 
-    // Карточка появляется в правой колонке под инструкцией
     panel.classList.add("visible");
 
     document.getElementById("closeButton").onclick = function() {
@@ -111,38 +116,65 @@ function showInfoCard(item) {
     };
 }
 
-function setProgress(value) {
-    progress = Math.max(0, Math.min(100, value));
+// Максимальное перемещение ползунка
+function getMaxTop() {
+    return Math.max(
+        0,
+        sliderTrack.clientHeight - sliderHandle.offsetHeight
+    );
+}
 
-    sliderHandle.style.top = progress + "%";
+// Установка положения ползунка
+function setHandleTop(top) {
+    const maxTop = getMaxTop();
+
+    top = Math.max(0, Math.min(maxTop, top));
+
+    sliderHandle.style.top = top + "px";
+
+    progress = maxTop > 0
+        ? (top / maxTop) * 100
+        : 0;
 
     updateMarkers();
 }
 
-function getProgress(clientY) {
-    const rect = sliderTrack.getBoundingClientRect();
+// Установка прогресса в процентах
+function setProgress(value) {
+    progress = Math.max(0, Math.min(100, value));
 
-    if (!rect.height) return 0;
+    const maxTop = getMaxTop();
 
-    const value = ((clientY - rect.top) / rect.height) * 100;
-
-    return Math.max(0, Math.min(100, value));
+    setHandleTop(maxTop * progress / 100);
 }
 
+// Получение положения ползунка при перетаскивании
+function getHandleTop(clientY) {
+    const rect = sliderTrack.getBoundingClientRect();
+
+    return clientY - rect.top - dragOffsetY;
+}
+
+// Изменение длины дорожки
 function resizeTrack() {
     if (!documentImage || !sliderTrack) return;
 
     const imageHeight = documentImage.getBoundingClientRect().height;
 
     if (imageHeight > 0) {
-        sliderTrack.style.height = imageHeight + "px";
+        sliderTrack.style.height = (imageHeight + 30) + "px";
+
+        setProgress(progress);
     }
 }
 
 // Перетаскивание ползунка
-
 sliderHandle.addEventListener("pointerdown", function(e) {
     dragging = true;
+
+    const handleRect = sliderHandle.getBoundingClientRect();
+
+    dragOffsetY = e.clientY - handleRect.top;
 
     sliderHandle.setPointerCapture(e.pointerId);
 
@@ -152,7 +184,7 @@ sliderHandle.addEventListener("pointerdown", function(e) {
 sliderHandle.addEventListener("pointermove", function(e) {
     if (!dragging) return;
 
-    setProgress(getProgress(e.clientY));
+    setHandleTop(getHandleTop(e.clientY));
 });
 
 sliderHandle.addEventListener("pointerup", function(e) {
@@ -167,8 +199,7 @@ sliderHandle.addEventListener("pointercancel", function() {
     dragging = false;
 });
 
-// Клик по дорожке ползунка
-
+// Клик по дорожке
 sliderTrack.addEventListener("pointerdown", function(e) {
     if (
         e.target === sliderHandle ||
@@ -177,11 +208,16 @@ sliderTrack.addEventListener("pointerdown", function(e) {
         return;
     }
 
-    setProgress(getProgress(e.clientY));
+    const rect = sliderTrack.getBoundingClientRect();
+
+    const handleHeight = sliderHandle.offsetHeight;
+
+    const top = e.clientY - rect.top - handleHeight / 2;
+
+    setHandleTop(top);
 });
 
 // Инициализация
-
 function initializeSlider() {
     createMarkers();
     resizeTrack();
@@ -191,7 +227,9 @@ function initializeSlider() {
 if (documentImage.complete && documentImage.naturalHeight > 0) {
     initializeSlider();
 } else {
-    documentImage.addEventListener("load", initializeSlider, { once: true });
+    documentImage.addEventListener("load", initializeSlider, {
+        once: true
+    });
 }
 
 window.addEventListener("resize", resizeTrack);
