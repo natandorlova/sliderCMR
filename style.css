@@ -131,13 +131,11 @@ body {
     top: 4px;
     left: 6px;
 
-    display: inline-flex;
-    align-items: flex-start;
-    gap: 5px;
-
+    display: block;
+    width: max-content;
     max-width: calc(100% - 12px);
-    padding: 4px 8px;
 
+    padding: 4px 8px;
     background: rgba(255, 255, 255, 0.94);
     border-radius: 5px;
 
@@ -146,15 +144,13 @@ body {
     line-height: 1.25;
 
     white-space: normal;
-    overflow-wrap: break-word;
-    word-break: normal;
+    overflow-wrap: anywhere;
 
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
     pointer-events: none;
 }
 
 .marker-title strong {
-    flex-shrink: 0;
     font-size: 14px;
     font-weight: 800;
 }
