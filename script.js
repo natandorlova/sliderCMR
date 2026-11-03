@@ -1,3 +1,4 @@
+
 const sliderTrack = document.getElementById("sliderTrack");
 const sliderHandle = document.getElementById("sliderHandle");
 const markersContainer = document.getElementById("markers");
@@ -6,6 +7,7 @@ const instruction = document.getElementById("instruction");
 
 let progress = 0;
 let dragging = false;
+let selectedMarker = null;
 
 
 /* =========================
@@ -13,11 +15,9 @@ let dragging = false;
    ========================= */
 
 function createMarkers() {
-
     markersContainer.innerHTML = "";
 
     data.forEach(item => {
-
         const marker = document.createElement("div");
 
         marker.className = "marker";
@@ -31,11 +31,9 @@ function createMarkers() {
         marker.style.borderColor = item.color;
         marker.style.background = hexToRgba(item.color, 0.28);
 
-
         const title = document.createElement("div");
 
         title.className = "marker-title";
-
         title.innerHTML = `
             <strong>${item.number}</strong>
             ${item.title}
@@ -45,20 +43,14 @@ function createMarkers() {
 
         marker.appendChild(title);
 
-
         marker.addEventListener("click", function(e) {
-
             e.stopPropagation();
-
-            showInfoCard(item);
-
+            selectedMarker = marker;
+            showInfoCard(item, marker);
         });
 
-
         markersContainer.appendChild(marker);
-
     });
-
 }
 
 
@@ -67,7 +59,6 @@ function createMarkers() {
    ========================= */
 
 function hexToRgba(hex, alpha) {
-
     hex = hex.replace("#", "");
 
     const r = parseInt(hex.substring(0, 2), 16);
@@ -75,7 +66,6 @@ function hexToRgba(hex, alpha) {
     const b = parseInt(hex.substring(4, 6), 16);
 
     return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-
 }
 
 
@@ -84,28 +74,19 @@ function hexToRgba(hex, alpha) {
    ========================= */
 
 function updateMarkers() {
-
     data.forEach(item => {
-
-        const marker = document.querySelector(
+        const marker = markersContainer.querySelector(
             `.marker[data-id="${item.id}"]`
         );
 
         if (!marker) return;
 
-
         if (progress >= item.showAt) {
-
             marker.classList.add("active");
-
         } else {
-
             marker.classList.remove("active");
-
         }
-
     });
-
 }
 
 
@@ -113,172 +94,124 @@ function updateMarkers() {
    ИНФОРМАЦИОННАЯ КАРТОЧКА
    ========================= */
 
-function showInfoCard(item) {
+function showInfoCard(item, marker) {
+    const panel = document.getElementById("infoPanel");
 
-    let panel = document.getElementById("infoPanel");
+    if (!panel) return;
 
-    if (!panel) {
-        panel = document.createElement("div");
-        panel.id = "infoPanel";
-        panel.className = "info-panel";
+    const card = panel.querySelector(".info-card");
 
-        document.body.appendChild(panel);
-    }
+    if (!card) return;
 
-    /*
-       Определяем, какой документ сейчас открыт.
-       Здесь предполагается, что у тебя есть
-       переменная documentType = "invoice" / "packing".
-    */
+    const cardNumber = document.getElementById("cardNumber");
+    const cardTitle = document.getElementById("cardTitle");
+    const cardContent = document.getElementById("cardContent");
 
-    const documentData = item[documentType];
+    card.style.borderLeftColor = item.color;
 
-    if (!documentData) return;
+    cardNumber.textContent = item.number;
+    cardNumber.style.color = item.color;
 
+    cardTitle.textContent = item.title;
+    cardTitle.style.color = item.color;
 
-    /*
-       Находим само выделенное поле
-    */
+    cardContent.innerHTML = `
+        <p>
+            <strong>Вносим:</strong><br>
+            ${item.content.enter}
+        </p>
 
-    const marker = document.querySelector(
-        `.marker[data-id="${item.id}"][data-document="${documentType}"]`
-    );
+        <p>
+            <strong>Где берем:</strong><br>
+            ${item.content.source}
+        </p>
 
-    if (!marker) return;
-
-
-    /*
-       Положение выделенного поля относительно окна браузера
-    */
-
-    const rect = marker.getBoundingClientRect();
-
-
-    /*
-       Положение карточки:
-       справа от документа,
-       но на уровне выделенного поля
-    */
-
-   const instruction = document.getElementById("instruction");
-const instructionRect = instruction.getBoundingClientRect();
-
-const gap = 24;
-
-let left = rect.right + gap;
-
-// Карточка не поднимается выше нижнего края инструкции
-let top = Math.max(
-    rect.top,
-    instructionRect.bottom + 16
-);
-
-const cardHeight = panel.offsetHeight || 320;
-
-if (top + cardHeight > window.innerHeight - 20) {
-    top = Math.max(
-        instructionRect.bottom + 16,
-        window.innerHeight - cardHeight - 20
-    );
-}
-
-
-    /*
-       Если карточка не помещается по высоте,
-       немного поднимаем её.
-    */
-
-    const cardHeight = 320;
-
-    if (top + cardHeight > window.innerHeight - 20) {
-
-        top = window.innerHeight - cardHeight - 20;
-
-    }
-
-    if (top < 20) {
-
-        top = 20;
-
-    }
-
-
-    panel.innerHTML = `
-        <button
-            class="close-button"
-            type="button"
-            aria-label="Закрыть"
-        >
-            ×
-        </button>
-
-        <div
-            class="info-card"
-            style="border-left-color:${item.color}"
-        >
-
-            <div
-                class="info-number"
-                style="color:${item.color}"
-            >
-                ${item.number}
-            </div>
-
-            <h3 style="color:${item.color}">
-                ${item.title}
-            </h3>
-
-            <p>
-                <strong>Вносим:</strong><br>
-                ${item.content.enter}
-            </p>
-
-            <p>
-                <strong>Где берем:</strong><br>
-                ${item.content.source}
-            </p>
-
-            ${
-                item.important
-                ? `
+        ${
+            item.important
+            ? `
                 <p class="important">
                     <strong>Важно:</strong><br>
                     ${item.important}
                 </p>
-                `
-                : ""
-            }
-
-        </div>
+            `
+            : ""
+        }
     `;
 
-
-    /*
-       Ставим карточку на нужный уровень страницы
-    */
-
     panel.style.position = "fixed";
-    panel.style.left = left + "px";
-    panel.style.top = top + "px";
-
-
-    const closeButton =
-        panel.querySelector(".close-button");
-
-
-    closeButton.addEventListener(
-        "click",
-        function() {
-
-            panel.classList.remove("visible");
-
-        }
-    );
-
+    panel.style.width = "330px";
+    panel.style.zIndex = "20";
 
     panel.classList.add("visible");
 
+    positionInfoCard(marker);
+
+    const closeButton = document.getElementById("closeButton");
+
+    closeButton.onclick = function() {
+        panel.classList.remove("visible");
+        selectedMarker = null;
+    };
 }
+
+
+/* =========================
+   ПОЗИЦИЯ КАРТОЧКИ
+   ========================= */
+
+function positionInfoCard(marker) {
+    const panel = document.getElementById("infoPanel");
+
+    if (!panel || !marker) return;
+
+    const rect = marker.getBoundingClientRect();
+
+    const instructionRect = instruction.getBoundingClientRect();
+
+    const gap = 24;
+    const panelWidth = panel.offsetWidth || 330;
+
+    let left = rect.right + gap;
+
+    // Если справа недостаточно места, размещаем карточку
+    // рядом с правой границей документа.
+    const maxLeft = window.innerWidth - panelWidth - 16;
+
+    left = Math.min(left, maxLeft);
+
+    // Карточка всегда начинается ниже инструкции.
+    const minTop = instructionRect.bottom + 16;
+
+    const panelHeight = panel.offsetHeight;
+
+    let top = Math.max(rect.top, minTop);
+
+    // Ограничиваем нижнюю границу карточки.
+    if (top + panelHeight > window.innerHeight - 16) {
+        top = Math.max(
+            minTop,
+            window.innerHeight - panelHeight - 16
+        );
+    }
+
+    panel.style.left = Math.max(16, left) + "px";
+    panel.style.top = top + "px";
+}
+
+
+/* =========================
+   ОБНОВЛЕНИЕ КАРТОЧКИ ПРИ ПРОКРУТКЕ
+   ========================= */
+
+window.addEventListener("scroll", function() {
+    if (!selectedMarker) return;
+
+    const panel = document.getElementById("infoPanel");
+
+    if (panel && panel.classList.contains("visible")) {
+        positionInfoCard(selectedMarker);
+    }
+});
 
 
 /* =========================
@@ -286,35 +219,26 @@ if (top + cardHeight > window.innerHeight - 20) {
    ========================= */
 
 function setProgress(value) {
-
-    progress = Math.max(
-        0,
-        Math.min(100, value)
-    );
+    progress = Math.max(0, Math.min(100, value));
 
     sliderHandle.style.top = progress + "%";
 
     updateMarkers();
-
 }
 
 
 /* =========================
-   ПОЛОЖЕНИЕ ПО КООРДИНАТЕ Y
+   ПОЛОЖЕНИЕ ПО Y
    ========================= */
 
 function getProgress(clientY) {
-
     const rect = sliderTrack.getBoundingClientRect();
 
-    const value =
-        ((clientY - rect.top) / rect.height) * 100;
+    if (!rect.height) return 0;
 
-    return Math.max(
-        0,
-        Math.min(100, value)
-    );
+    const value = ((clientY - rect.top) / rect.height) * 100;
 
+    return Math.max(0, Math.min(100, value));
 }
 
 
@@ -323,152 +247,90 @@ function getProgress(clientY) {
    ========================= */
 
 function resizeTrack() {
-
     if (!documentImage || !sliderTrack) return;
 
+    const imageHeight = documentImage.getBoundingClientRect().height;
 
-    /*
-       Получаем реальную высоту
-       отрендерированного изображения
-    */
-
-    const imageHeight =
-        documentImage.getBoundingClientRect().height;
-
-
-    /*
-       Принудительно задаём эту высоту
-       треку
-    */
-
-    sliderTrack.style.height =
-        imageHeight + "px";
-
+    if (imageHeight > 0) {
+        sliderTrack.style.height = imageHeight + "px";
+    }
 }
 
 
 /* =========================
-   DRAG: POINTER
+   ПЕРЕМЕЩЕНИЕ РУЧКИ
    ========================= */
 
-sliderHandle.addEventListener(
-    "pointerdown",
-    function(e) {
+sliderHandle.addEventListener("pointerdown", function(e) {
+    dragging = true;
 
-        dragging = true;
+    sliderHandle.setPointerCapture(e.pointerId);
 
-        sliderHandle.setPointerCapture(
-            e.pointerId
-        );
+    e.preventDefault();
+});
 
-        e.preventDefault();
+sliderHandle.addEventListener("pointermove", function(e) {
+    if (!dragging) return;
 
-    }
-);
+    setProgress(getProgress(e.clientY));
+});
 
+sliderHandle.addEventListener("pointerup", function(e) {
+    dragging = false;
 
-sliderHandle.addEventListener(
-    "pointermove",
-    function(e) {
+    try {
+        sliderHandle.releasePointerCapture(e.pointerId);
+    } catch(error) {}
+});
 
-        if (!dragging) return;
-
-        setProgress(
-            getProgress(e.clientY)
-        );
-
-    }
-);
-
-
-sliderHandle.addEventListener(
-    "pointerup",
-    function(e) {
-
-        dragging = false;
-
-        try {
-
-            sliderHandle.releasePointerCapture(
-                e.pointerId
-            );
-
-        } catch(error) {}
-
-    }
-);
-
-
-sliderHandle.addEventListener(
-    "pointercancel",
-    function() {
-
-        dragging = false;
-
-    }
-);
+sliderHandle.addEventListener("pointercancel", function() {
+    dragging = false;
+});
 
 
 /* =========================
    КЛИК ПО ТРЕКУ
    ========================= */
 
-sliderTrack.addEventListener(
-    "pointerdown",
-    function(e) {
-
-        if (
-            e.target === sliderHandle ||
-            sliderHandle.contains(e.target)
-        ) {
-            return;
-        }
-
-        setProgress(
-            getProgress(e.clientY)
-        );
-
+sliderTrack.addEventListener("pointerdown", function(e) {
+    if (
+        e.target === sliderHandle ||
+        sliderHandle.contains(e.target)
+    ) {
+        return;
     }
-);
+
+    setProgress(getProgress(e.clientY));
+});
 
 
 /* =========================
    ЗАПУСК
    ========================= */
 
-window.addEventListener(
-    "load",
-    function() {
+function initializeSlider() {
+    createMarkers();
 
-        createMarkers();
+    resizeTrack();
 
-        /*
-           Ждём, пока браузер
-           окончательно рассчитает
-           размер изображения.
-        */
+    setProgress(0);
+}
 
-        requestAnimationFrame(function() {
-
-            resizeTrack();
-
-            setProgress(0);
-
-        });
-
-    }
-);
+if (documentImage.complete && documentImage.naturalHeight > 0) {
+    initializeSlider();
+} else {
+    documentImage.addEventListener("load", initializeSlider, { once: true });
+}
 
 
 /* =========================
-   RESIZE
+   ИЗМЕНЕНИЕ РАЗМЕРА ОКНА
    ========================= */
 
-window.addEventListener(
-    "resize",
-    function() {
+window.addEventListener("resize", function() {
+    resizeTrack();
 
-        resizeTrack();
-
+    if (selectedMarker) {
+        positionInfoCard(selectedMarker);
     }
-);
+});
