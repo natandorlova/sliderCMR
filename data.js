@@ -319,7 +319,7 @@ const data = [
         color: "#57d163",
 
         x: 2,
-        y: 64,
+        y: 63,
         w: 48,
         h: 5,
 
@@ -402,12 +402,12 @@ const data = [
 
         color: "#ff9800",
 
-        x: 1,
-        y: 88,
+        x: 2,
+        y: 68,
         w: 25,
-        h: 6,
+        h: 2,
 
-        showAt: 72,
+        showAt: 70,
 
         content: {
             enter: "место и дата составления накладной",
@@ -427,10 +427,10 @@ const data = [
 
         color: "#16c7c7",
 
-        x: 27,
-        y: 88,
-        w: 24,
-        h: 7,
+        x: 2,
+        y: 70,
+        w: 30,
+        h: 9,
 
         showAt: 75,
 
