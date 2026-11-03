@@ -1,18 +1,10 @@
-
 const sliderTrack = document.getElementById("sliderTrack");
 const sliderHandle = document.getElementById("sliderHandle");
 const markersContainer = document.getElementById("markers");
 const documentImage = document.getElementById("cmrImage");
-const instruction = document.getElementById("instruction");
 
 let progress = 0;
 let dragging = false;
-let selectedMarker = null;
-
-
-/* =========================
-   СОЗДАНИЕ МАРКЕРОВ
-   ========================= */
 
 function createMarkers() {
     markersContainer.innerHTML = "";
@@ -34,29 +26,19 @@ function createMarkers() {
         const title = document.createElement("div");
 
         title.className = "marker-title";
-        title.innerHTML = `
-            <strong>${item.number}</strong>
-            ${item.title}
-        `;
-
+        title.innerHTML = `<strong>${item.number}</strong> ${item.title}`;
         title.style.color = item.color;
 
         marker.appendChild(title);
 
         marker.addEventListener("click", function(e) {
             e.stopPropagation();
-            selectedMarker = marker;
-            showInfoCard(item, marker);
+            showInfoCard(item);
         });
 
         markersContainer.appendChild(marker);
     });
 }
-
-
-/* =========================
-   ЦВЕТ
-   ========================= */
 
 function hexToRgba(hex, alpha) {
     hex = hex.replace("#", "");
@@ -67,11 +49,6 @@ function hexToRgba(hex, alpha) {
 
     return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 }
-
-
-/* =========================
-   ПОКАЗ МАРКЕРОВ
-   ========================= */
 
 function updateMarkers() {
     data.forEach(item => {
@@ -89,23 +66,15 @@ function updateMarkers() {
     });
 }
 
-
-/* =========================
-   ИНФОРМАЦИОННАЯ КАРТОЧКА
-   ========================= */
-
-function showInfoCard(item, marker) {
+function showInfoCard(item) {
     const panel = document.getElementById("infoPanel");
 
-    if (!panel) return;
-
-    const card = panel.querySelector(".info-card");
-
-    if (!card) return;
-
+    const card = document.getElementById("infoCard");
     const cardNumber = document.getElementById("cardNumber");
     const cardTitle = document.getElementById("cardTitle");
     const cardContent = document.getElementById("cardContent");
+
+    if (!panel || !card) return;
 
     card.style.borderLeftColor = item.color;
 
@@ -126,97 +95,21 @@ function showInfoCard(item, marker) {
             ${item.content.source}
         </p>
 
-        ${
-            item.important
-            ? `
-                <p class="important">
-                    <strong>Важно:</strong><br>
-                    ${item.important}
-                </p>
-            `
-            : ""
-        }
+        ${item.important ? `
+            <p class="important">
+                <strong>Важно:</strong><br>
+                ${item.important}
+            </p>
+        ` : ""}
     `;
 
-    panel.style.position = "fixed";
-    panel.style.width = "330px";
-    panel.style.zIndex = "20";
-
+    // Карточка появляется в правой колонке под инструкцией
     panel.classList.add("visible");
 
-    positionInfoCard(marker);
-
-    const closeButton = document.getElementById("closeButton");
-
-    closeButton.onclick = function() {
+    document.getElementById("closeButton").onclick = function() {
         panel.classList.remove("visible");
-        selectedMarker = null;
     };
 }
-
-
-/* =========================
-   ПОЗИЦИЯ КАРТОЧКИ
-   ========================= */
-
-function positionInfoCard(marker) {
-    const panel = document.getElementById("infoPanel");
-
-    if (!panel || !marker) return;
-
-    const rect = marker.getBoundingClientRect();
-
-    const instructionRect = instruction.getBoundingClientRect();
-
-    const gap = 24;
-    const panelWidth = panel.offsetWidth || 330;
-
-    let left = rect.right + gap;
-
-    // Если справа недостаточно места, размещаем карточку
-    // рядом с правой границей документа.
-    const maxLeft = window.innerWidth - panelWidth - 16;
-
-    left = Math.min(left, maxLeft);
-
-    // Карточка всегда начинается ниже инструкции.
-    const minTop = instructionRect.bottom + 16;
-
-    const panelHeight = panel.offsetHeight;
-
-    let top = Math.max(rect.top, minTop);
-
-    // Ограничиваем нижнюю границу карточки.
-    if (top + panelHeight > window.innerHeight - 16) {
-        top = Math.max(
-            minTop,
-            window.innerHeight - panelHeight - 16
-        );
-    }
-
-    panel.style.left = Math.max(16, left) + "px";
-    panel.style.top = top + "px";
-}
-
-
-/* =========================
-   ОБНОВЛЕНИЕ КАРТОЧКИ ПРИ ПРОКРУТКЕ
-   ========================= */
-
-window.addEventListener("scroll", function() {
-    if (!selectedMarker) return;
-
-    const panel = document.getElementById("infoPanel");
-
-    if (panel && panel.classList.contains("visible")) {
-        positionInfoCard(selectedMarker);
-    }
-});
-
-
-/* =========================
-   ПОЛЗУНОК
-   ========================= */
 
 function setProgress(value) {
     progress = Math.max(0, Math.min(100, value));
@@ -225,11 +118,6 @@ function setProgress(value) {
 
     updateMarkers();
 }
-
-
-/* =========================
-   ПОЛОЖЕНИЕ ПО Y
-   ========================= */
 
 function getProgress(clientY) {
     const rect = sliderTrack.getBoundingClientRect();
@@ -241,11 +129,6 @@ function getProgress(clientY) {
     return Math.max(0, Math.min(100, value));
 }
 
-
-/* =========================
-   ВЫСОТА ТРЕКА
-   ========================= */
-
 function resizeTrack() {
     if (!documentImage || !sliderTrack) return;
 
@@ -256,10 +139,7 @@ function resizeTrack() {
     }
 }
 
-
-/* =========================
-   ПЕРЕМЕЩЕНИЕ РУЧКИ
-   ========================= */
+// Перетаскивание ползунка
 
 sliderHandle.addEventListener("pointerdown", function(e) {
     dragging = true;
@@ -287,10 +167,7 @@ sliderHandle.addEventListener("pointercancel", function() {
     dragging = false;
 });
 
-
-/* =========================
-   КЛИК ПО ТРЕКУ
-   ========================= */
+// Клик по дорожке ползунка
 
 sliderTrack.addEventListener("pointerdown", function(e) {
     if (
@@ -303,16 +180,11 @@ sliderTrack.addEventListener("pointerdown", function(e) {
     setProgress(getProgress(e.clientY));
 });
 
-
-/* =========================
-   ЗАПУСК
-   ========================= */
+// Инициализация
 
 function initializeSlider() {
     createMarkers();
-
     resizeTrack();
-
     setProgress(0);
 }
 
@@ -322,15 +194,4 @@ if (documentImage.complete && documentImage.naturalHeight > 0) {
     documentImage.addEventListener("load", initializeSlider, { once: true });
 }
 
-
-/* =========================
-   ИЗМЕНЕНИЕ РАЗМЕРА ОКНА
-   ========================= */
-
-window.addEventListener("resize", function() {
-    resizeTrack();
-
-    if (selectedMarker) {
-        positionInfoCard(selectedMarker);
-    }
-});
+window.addEventListener("resize", resizeTrack);
