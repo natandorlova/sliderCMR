@@ -4,9 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Заполнение CMR</title>
-
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -14,108 +12,74 @@
 
 <div class="page">
 
-    <div class="intro">
-
-        <h2>Заполнение CMR</h2>
-
-    </div>
-
-
     <div class="main-layout">
 
+        <!-- ДОКУМЕНТ И ЗАГОЛОВОК -->
 
-        <!-- ДОКУМЕНТ + ПОЛЗУНОК -->
+        <div class="document-column">
 
-        <div class="document-wrapper">
-
-
-            <!-- ДОКУМЕНТ -->
-
-            <div class="document" id="document">
-
-                <img
-                    src="images/cmr.png"
-                    class="invoice-image"
-                    id="cmrImage"
-                    alt="CMR"
-                    draggable="false"
-                >
-
-                <div id="markers"></div>
-
+            <div class="intro">
+                <h2>Заполнение CMR</h2>
             </div>
 
+            <div class="document-wrapper">
 
-            <!-- ВЕРТИКАЛЬНЫЙ ПОЛЗУНОК -->
+                <div class="document" id="document">
 
-            <div
-                class="slider-track"
-                id="sliderTrack"
-            >
+                    <img
+                        src="images/cmr.png"
+                        class="invoice-image"
+                        id="cmrImage"
+                        alt="CMR"
+                        draggable="false"
+                    >
 
-                <div
-                    class="slider-handle"
-                    id="sliderHandle"
-                >
+                    <div id="markers"></div>
 
-                    <div class="handle-circle">
-                        ▼
+                </div>
+
+                <!-- ВЕРТИКАЛЬНЫЙ ПОЛЗУНОК -->
+
+                <div class="slider-track" id="sliderTrack">
+
+                    <div class="slider-handle" id="sliderHandle">
+                        <div class="handle-circle">▼</div>
                     </div>
 
                 </div>
 
             </div>
 
-
         </div>
-
 
         <!-- ПРАВАЯ ПАНЕЛЬ -->
 
         <aside class="side-panel">
 
-
-            <!-- ИНСТРУКЦИЯ, ВИДНА ПО УМОЛЧАНИЮ -->
-
-            <div
-                class="instruction"
-                id="instruction"
-            >
+            <div class="instruction" id="instruction">
 
                 <strong>Подсказка</strong>
 
-                Передвиньте ползунок.
-                Кликните на цветное поле,
-                чтобы увидеть пояснение.
+                <p>Передвиньте ползунок.</p>
+
+                <p>Кликните на цветное поле, чтобы увидеть пояснение.</p>
 
             </div>
 
+            <!-- КАРТОЧКА ПОЯСНЕНИЯ -->
 
-            <!-- ЗДЕСЬ ПОЯВЛЯЕТСЯ КАРТОЧКА -->
+            <div class="info-panel" id="infoPanel">
 
-            <div
-                class="info-panel"
-                id="infoPanel"
-            >
-
-                <div
-                    class="info-card"
-                    id="infoCard"
-                >
+                <div class="info-card" id="infoCard">
 
                     <button
                         class="close-button"
                         id="closeButton"
                         type="button"
                         aria-label="Закрыть"
-                    >
-                        ×
-                    </button>
+                    >×</button>
 
-                    <div
-                        class="info-number"
-                        id="cardNumber"
-                    ></div>
+                    <div class="info-number" id="cardNumber"></div>
 
                     <h3 id="cardTitle"></h3>
 
@@ -125,18 +89,14 @@
 
             </div>
 
-
         </aside>
-
 
     </div>
 
 </div>
 
-
 <script src="data.js"></script>
 <script src="script.js"></script>
 
 </body>
-
 </html>
