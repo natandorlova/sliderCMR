@@ -160,11 +160,27 @@ function showInfoCard(item) {
        но на уровне выделенного поля
     */
 
-    const gap = 24;
+   const instruction = document.getElementById("instruction");
+const instructionRect = instruction.getBoundingClientRect();
 
-    let left = rect.right + gap;
+const gap = 24;
 
-    let top = rect.top;
+let left = rect.right + gap;
+
+// Карточка не поднимается выше нижнего края инструкции
+let top = Math.max(
+    rect.top,
+    instructionRect.bottom + 16
+);
+
+const cardHeight = panel.offsetHeight || 320;
+
+if (top + cardHeight > window.innerHeight - 20) {
+    top = Math.max(
+        instructionRect.bottom + 16,
+        window.innerHeight - cardHeight - 20
+    );
+}
 
 
     /*
