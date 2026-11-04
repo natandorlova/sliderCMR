@@ -13,6 +13,9 @@ let progress = 0;
 let dragging = false;
 let dragOffsetY = 0;
 
+// Последняя вертикальная координата клика относительно документа
+let lastClickPosition = null;
+
 
 // СОЗДАНИЕ МАРКЕРОВ
 
@@ -32,6 +35,7 @@ function createMarkers() {
         marker.style.borderColor = item.color;
         marker.style.backgroundColor = item.color + "20";
 
+        // Заголовок подсветки
         const title = document.createElement("div");
         title.className = "marker-title";
 
@@ -46,8 +50,8 @@ function createMarkers() {
 
         marker.appendChild(title);
 
-        marker.addEventListener("click", () => {
-            showInfoCard(item);
+        marker.addEventListener("click", (event) => {
+            showInfoCard(item, event);
         });
 
         markersContainer.appendChild(marker);
@@ -76,7 +80,7 @@ function updateMarkers() {
 
 // ОТОБРАЖЕНИЕ КАРТОЧКИ
 
-function showInfoCard(item) {
+function showInfoCard(item, event) {
     const card = document.getElementById("infoCard");
     const cardNumber = document.getElementById("cardNumber");
     const cardTitle = document.getElementById("cardTitle");
@@ -102,6 +106,11 @@ function showInfoCard(item) {
         }
     `;
 
+    // Запоминаем высоту клика относительно изображения
+    const imageRect = documentImage.getBoundingClientRect();
+
+    lastClickPosition = event.clientY - imageRect.top;
+
     infoPanel.classList.add("visible");
 
     document.getElementById("closeButton").onclick = function() {
@@ -117,47 +126,34 @@ function showInfoCard(item) {
 function updateSidePanelPosition() {
     if (!documentImage || !sidePanel || !instruction || !mainLayout) return;
 
-    // На мобильных устройствах панель располагается под документом
+    const imageRect = documentImage.getBoundingClientRect();
+    const layoutRect = mainLayout.getBoundingClientRect();
+
+    // МОБИЛЬНАЯ ВЕРСИЯ
     if (window.innerWidth <= 900) {
         sidePanel.style.transform = "none";
         infoPanel.style.top = "auto";
         return;
     }
 
-    const imageRect = documentImage.getBoundingClientRect();
-    const layoutRect = mainLayout.getBoundingClientRect();
-
-    // Инструкция всегда у верхнего края изображения
+    // Инструкция у верхнего края документа
     const instructionTop = imageRect.top - layoutRect.top;
 
     sidePanel.style.transform =
         `translateY(${instructionTop - sidePanel.offsetTop}px)`;
 
-    // Положение карточки относительно верхнего края панели
-    let anchor;
+    // Карточка появляется на высоте последнего клика
+    if (lastClickPosition !== null) {
+        const instructionHeight = instruction.offsetHeight;
+        const gap = 16;
 
-    if (progress < 35) {
-        anchor = 0.20;
-    } else if (progress < 68) {
-        anchor = 0.56;
-    } else {
-        anchor = 0.83;
+        const cardTop = Math.max(
+            instructionHeight + gap,
+            lastClickPosition
+        );
+
+        infoPanel.style.top = cardTop + "px";
     }
-
-    // Отступ карточки от верхнего края документа
-    // Учитываем высоту инструкции и расстояние между блоками
-    const instructionHeight = instruction.offsetHeight;
-    const gap = 16;
-
-    const targetCardTop =
-        imageRect.height * anchor;
-
-    const cardTop = Math.max(
-        instructionHeight + gap,
-        targetCardTop
-    );
-
-    infoPanel.style.top = cardTop + "px";
 }
 
 
@@ -254,7 +250,10 @@ sliderHandle.addEventListener("pointercancel", function() {
 // КЛИК ПО ТРЕКУ
 
 sliderTrack.addEventListener("pointerdown", function(event) {
-    if (event.target === sliderHandle || sliderHandle.contains(event.target)) return;
+    if (
+        event.target === sliderHandle ||
+        sliderHandle.contains(event.target)
+    ) return;
 
     const trackRect = sliderTrack.getBoundingClientRect();
 
@@ -283,5 +282,7 @@ if (documentImage.complete && documentImage.naturalHeight > 0) {
     documentImage.addEventListener("load", initializeSlider, { once: true });
 }
 
+
+// ИЗМЕНЕНИЕ РАЗМЕРА ОКНА
 
 window.addEventListener("resize", resizeTrack);
