@@ -36,10 +36,10 @@ function createMarkers() {
         title.className = "marker-title";
 
         const number = document.createElement("strong");
-        number.textContent = item.number;
+number.textContent = item.number + ". ";
 
-        const text = document.createElement("span");
-        text.textContent = item.title;
+const text = document.createElement("span");
+text.textContent = item.title;
 
         title.appendChild(number);
         title.appendChild(text);
