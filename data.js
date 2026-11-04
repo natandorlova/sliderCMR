@@ -200,7 +200,7 @@ const data = [
         title: "Условия оплаты",
         color: "#57d163",
         x: 2,
-        y: 62,
+        y: 63,
         w: 48,
         h: 5,
         showAt: 60,
@@ -252,7 +252,7 @@ const data = [
         color: "#ff9800",
         x: 2,
         y: 68,
-        w: 63,
+        w: 64,
         h: 2,
         showAt: 70,
         content: {
