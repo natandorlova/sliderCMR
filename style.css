@@ -19,7 +19,7 @@ body {
 
 /* =========================
    СТРАНИЦА
-   ========================= */
+========================= */
 
 .page {
     width: 100%;
@@ -29,7 +29,7 @@ body {
 
 /* =========================
    ОСНОВНОЙ МАКЕТ
-   ========================= */
+========================= */
 
 .main-layout {
     position: relative;
@@ -42,15 +42,12 @@ body {
 
 /* =========================
    КОЛОНКА ДОКУМЕНТА
-   ========================= */
+========================= */
 
 .document-column {
     width: fit-content;
     flex: 0 0 auto;
 }
-
-/* Заголовок центрируется относительно изображения,
-   без учёта ширины ползунка */
 
 .intro {
     width: calc(100% - 24px);
@@ -67,7 +64,7 @@ body {
 
 /* =========================
    ДОКУМЕНТ И ПОЛЗУНОК
-   ========================= */
+========================= */
 
 .document-wrapper {
     display: flex;
@@ -96,7 +93,7 @@ body {
 
 /* =========================
    ЦВЕТНЫЕ ПОЛЯ
-   ========================= */
+========================= */
 
 #markers {
     position: absolute;
@@ -130,25 +127,19 @@ body {
     position: absolute;
     top: 4px;
     left: 6px;
-
     display: block;
     width: max-content;
     max-width: calc(100% - 12px);
-
     padding: 4px 8px;
-
     background: rgba(255, 255, 255, 0.94);
     border-radius: 5px;
-
     color: #263238;
     font-size: 13px;
     font-weight: 600;
     line-height: 1.3;
-
     white-space: normal;
     overflow-wrap: break-word;
     word-break: normal;
-
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
     pointer-events: none;
 }
@@ -160,9 +151,10 @@ body {
     font-size: 14px;
     font-weight: 800;
 }
+
 /* =========================
    ВЕРТИКАЛЬНЫЙ ПОЛЗУНОК
-   ========================= */
+========================= */
 
 .slider-track {
     position: relative;
@@ -225,29 +217,24 @@ body {
 
 /* =========================
    ПРАВАЯ КОЛОНКА
-   ========================= */
+========================= */
 
 .side-panel {
     width: 330px;
     flex: 0 0 330px;
     position: relative;
     min-height: 200px;
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 16px;
-    transition: transform 0.35s ease;
+    display: block;
 }
 
 /* =========================
    ИНСТРУКЦИЯ
-   ========================= */
+========================= */
 
 .instruction {
     display: block;
     position: relative;
     z-index: 2;
-    flex-shrink: 0;
     width: 100%;
     padding: 20px 22px;
     background: #fff;
@@ -278,12 +265,16 @@ body {
 
 /* =========================
    КАРТОЧКА ПОЯСНЕНИЯ
-   ========================= */
+========================= */
 
 .info-panel {
     display: none;
-    position: static;
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
+    z-index: 3;
+    transition: top 0.35s ease;
 }
 
 .info-panel.visible {
@@ -337,7 +328,7 @@ body {
 
 /* =========================
    КНОПКА ЗАКРЫТИЯ
-   ========================= */
+========================= */
 
 .close-button {
     position: absolute;
@@ -366,7 +357,7 @@ body {
 
 /* =========================
    АДАПТАЦИЯ
-   ========================= */
+========================= */
 
 @media (max-width: 1200px) {
 
@@ -421,7 +412,13 @@ body {
         position: relative;
         width: min(650px, 100%);
         flex-basis: auto;
-        transform: none !important;
+        min-height: 0;
+    }
+
+    .info-panel {
+        position: relative;
+        top: auto !important;
+        margin-top: 16px;
     }
 }
 
