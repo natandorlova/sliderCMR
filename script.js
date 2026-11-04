@@ -1,3 +1,4 @@
+
 const sliderTrack = document.getElementById("sliderTrack");
 const sliderHandle = document.getElementById("sliderHandle");
 const markersContainer = document.getElementById("markers");
@@ -15,6 +16,8 @@ let dragOffsetY = 0;
 // СОЗДАНИЕ МАРКЕРОВ
 
 function createMarkers() {
+    markersContainer.innerHTML = "";
+
     data.forEach(item => {
         const marker = document.createElement("div");
 
@@ -23,7 +26,25 @@ function createMarkers() {
 
         marker.style.top = item.y + "%";
         marker.style.left = item.x + "%";
-        marker.style.backgroundColor = item.color;
+        marker.style.width = item.w + "%";
+        marker.style.height = item.h + "%";
+        marker.style.borderColor = item.color;
+        marker.style.backgroundColor = item.color + "20";
+
+        // Заголовок подсветки
+        const title = document.createElement("div");
+        title.className = "marker-title";
+
+        const number = document.createElement("strong");
+        number.textContent = item.number;
+
+        const text = document.createElement("span");
+        text.textContent = item.title;
+
+        title.appendChild(number);
+        title.appendChild(text);
+
+        marker.appendChild(title);
 
         marker.addEventListener("click", () => {
             showInfoCard(item);
