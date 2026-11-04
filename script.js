@@ -13,7 +13,6 @@ let progress = 0;
 let dragging = false;
 let dragOffsetY = 0;
 
-// Последняя вертикальная координата клика относительно документа
 let lastClickPosition = null;
 
 
@@ -35,7 +34,6 @@ function createMarkers() {
         marker.style.borderColor = item.color;
         marker.style.backgroundColor = item.color + "20";
 
-        // Заголовок подсветки
         const title = document.createElement("div");
         title.className = "marker-title";
 
@@ -50,7 +48,7 @@ function createMarkers() {
 
         marker.appendChild(title);
 
-        marker.addEventListener("click", (event) => {
+        marker.addEventListener("click", event => {
             showInfoCard(item, event);
         });
 
@@ -69,11 +67,7 @@ function updateMarkers() {
 
         if (!marker) return;
 
-        if (progress >= item.showAt) {
-            marker.classList.add("active");
-        } else {
-            marker.classList.remove("active");
-        }
+        marker.classList.toggle("active", progress >= item.showAt);
     });
 }
 
@@ -90,11 +84,11 @@ function showInfoCard(item, event) {
 
     card.style.borderLeftColor = item.color;
 
-    cardNumber.textContent = item.number;
+    cardNumber.textContent = item.number + ".";
     cardNumber.style.color = item.color;
 
     cardTitle.textContent = item.title;
-    cardTitle.style.color = item.color;
+    cardTitle.style.color = "#222";
 
     cardContent.innerHTML = `
         <p><strong>Вносим:</strong><br>${item.content.enter}</p>
@@ -106,7 +100,6 @@ function showInfoCard(item, event) {
         }
     `;
 
-    // Запоминаем высоту клика относительно изображения
     const imageRect = documentImage.getBoundingClientRect();
 
     lastClickPosition = event.clientY - imageRect.top;
@@ -117,7 +110,10 @@ function showInfoCard(item, event) {
         infoPanel.classList.remove("visible");
     };
 
-    updateSidePanelPosition();
+    // После отображения карточки рассчитываем её положение
+    requestAnimationFrame(() => {
+        updateSidePanelPosition();
+    });
 }
 
 
@@ -136,21 +132,23 @@ function updateSidePanelPosition() {
         return;
     }
 
-    // Инструкция у верхнего края документа
+    // Инструкция выравнивается по верхнему краю документа
     const instructionTop = imageRect.top - layoutRect.top;
 
     sidePanel.style.transform =
         `translateY(${instructionTop - sidePanel.offsetTop}px)`;
 
-    // Карточка появляется на высоте последнего клика
-    if (lastClickPosition !== null) {
+    // Середина карточки располагается на уровне клика
+    if (lastClickPosition !== null && infoPanel.classList.contains("visible")) {
         const instructionHeight = instruction.offsetHeight;
         const gap = 16;
+        const cardHeight = infoPanel.offsetHeight;
 
-        const cardTop = Math.max(
-            instructionHeight + gap,
-            lastClickPosition
-        );
+        const desiredTop = lastClickPosition - cardHeight / 2;
+
+        const minTop = instructionHeight + gap;
+
+        const cardTop = Math.max(minTop, desiredTop);
 
         infoPanel.style.top = cardTop + "px";
     }
@@ -285,4 +283,7 @@ if (documentImage.complete && documentImage.naturalHeight > 0) {
 
 // ИЗМЕНЕНИЕ РАЗМЕРА ОКНА
 
-window.addEventListener("resize", resizeTrack);
+window.addEventListener("resize", function() {
+    resizeTrack();
+    updateSidePanelPosition();
+});
