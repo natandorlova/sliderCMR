@@ -6,6 +6,7 @@ const documentImage = document.getElementById("cmrImage");
 
 const sidePanel = document.querySelector(".side-panel");
 const instruction = document.getElementById("instruction");
+const infoPanel = document.getElementById("infoPanel");
 const mainLayout = document.querySelector(".main-layout");
 
 let progress = 0;
@@ -31,15 +32,14 @@ function createMarkers() {
         marker.style.borderColor = item.color;
         marker.style.backgroundColor = item.color + "20";
 
-        // Заголовок подсветки
         const title = document.createElement("div");
         title.className = "marker-title";
 
         const number = document.createElement("strong");
-number.textContent = item.number + ". ";
+        number.textContent = item.number + ". ";
 
-const text = document.createElement("span");
-text.textContent = item.title;
+        const text = document.createElement("span");
+        text.textContent = item.title;
 
         title.appendChild(number);
         title.appendChild(text);
@@ -77,13 +77,12 @@ function updateMarkers() {
 // ОТОБРАЖЕНИЕ КАРТОЧКИ
 
 function showInfoCard(item) {
-    const panel = document.getElementById("infoPanel");
     const card = document.getElementById("infoCard");
     const cardNumber = document.getElementById("cardNumber");
     const cardTitle = document.getElementById("cardTitle");
     const cardContent = document.getElementById("cardContent");
 
-    if (!panel || !card) return;
+    if (!infoPanel || !card) return;
 
     card.style.borderLeftColor = item.color;
 
@@ -103,47 +102,62 @@ function showInfoCard(item) {
         }
     `;
 
-    panel.classList.add("visible");
+    infoPanel.classList.add("visible");
 
     document.getElementById("closeButton").onclick = function() {
-        panel.classList.remove("visible");
+        infoPanel.classList.remove("visible");
     };
 
     updateSidePanelPosition();
 }
 
 
-// ПОЗИЦИЯ БОКОВОЙ ПАНЕЛИ
+// ПОЗИЦИЯ ИНСТРУКЦИИ И КАРТОЧКИ
 
 function updateSidePanelPosition() {
     if (!documentImage || !sidePanel || !instruction || !mainLayout) return;
 
+    // На мобильных устройствах панель располагается под документом
+    if (window.innerWidth <= 900) {
+        sidePanel.style.transform = "none";
+        infoPanel.style.top = "auto";
+        return;
+    }
+
     const imageRect = documentImage.getBoundingClientRect();
     const layoutRect = mainLayout.getBoundingClientRect();
 
+    // Инструкция всегда у верхнего края изображения
+    const instructionTop = imageRect.top - layoutRect.top;
+
+    sidePanel.style.transform =
+        `translateY(${instructionTop - sidePanel.offsetTop}px)`;
+
+    // Положение карточки относительно верхнего края панели
     let anchor;
 
     if (progress < 35) {
-        anchor = 0.24;
+        anchor = 0.20;
     } else if (progress < 68) {
         anchor = 0.56;
     } else {
         anchor = 0.83;
     }
 
-    const targetCardTop =
-        imageRect.top - layoutRect.top +
-        imageRect.height * anchor;
-
+    // Отступ карточки от верхнего края документа
+    // Учитываем высоту инструкции и расстояние между блоками
     const instructionHeight = instruction.offsetHeight;
     const gap = 16;
 
-    const targetPanelTop =
-        targetCardTop - instructionHeight - gap;
+    const targetCardTop =
+        imageRect.height * anchor;
 
-    const offset = targetPanelTop - sidePanel.offsetTop;
+    const cardTop = Math.max(
+        instructionHeight + gap,
+        targetCardTop
+    );
 
-    sidePanel.style.transform = `translateY(${offset}px)`;
+    infoPanel.style.top = cardTop + "px";
 }
 
 
@@ -174,11 +188,10 @@ function setHandleTop(top) {
 
 
 function setProgress(value) {
-    progress = Math.max(0, Math.min(100, value));
-
+    const normalizedValue = Math.max(0, Math.min(100, value));
     const maxTop = getMaxTop();
 
-    setHandleTop(maxTop * progress / 100);
+    setHandleTop(maxTop * normalizedValue / 100);
 }
 
 
@@ -241,7 +254,7 @@ sliderHandle.addEventListener("pointercancel", function() {
 // КЛИК ПО ТРЕКУ
 
 sliderTrack.addEventListener("pointerdown", function(event) {
-    if (event.target === sliderHandle) return;
+    if (event.target === sliderHandle || sliderHandle.contains(event.target)) return;
 
     const trackRect = sliderTrack.getBoundingClientRect();
 
@@ -260,13 +273,14 @@ function initializeSlider() {
     createMarkers();
     resizeTrack();
     setProgress(0);
+    updateSidePanelPosition();
 }
 
 
-if (documentImage.complete) {
+if (documentImage.complete && documentImage.naturalHeight > 0) {
     initializeSlider();
 } else {
-    documentImage.addEventListener("load", initializeSlider);
+    documentImage.addEventListener("load", initializeSlider, { once: true });
 }
 
 
