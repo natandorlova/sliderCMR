@@ -39,9 +39,11 @@ function createMarkers() {
 
         const number = document.createElement("strong");
         number.textContent = item.number + ". ";
+        number.style.color = item.color;
 
         const text = document.createElement("span");
         text.textContent = item.title;
+        text.style.color = item.color;
 
         title.appendChild(number);
         title.appendChild(text);
@@ -88,7 +90,9 @@ function showInfoCard(item, event) {
     cardNumber.style.color = item.color;
 
     cardTitle.textContent = item.title;
-    cardTitle.style.color = "#222";
+    cardTitle.style.color = item.color;
+
+    cardContent.style.marginTop = "12px";
 
     cardContent.innerHTML = `
         <p><strong>Вносим:</strong><br>${item.content.enter}</p>
